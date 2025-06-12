@@ -7,7 +7,7 @@ import {PriceConverter} from "./PriceConverter.sol";
 
 
 
-error NotOwner ();
+error FundMe__NotOwner ();
 
 contract FundMe {
    
@@ -65,7 +65,7 @@ contract FundMe {
     // require(msg.sender == owner, "only owner can call this function.");
     // _;
 
-    if (msg.sender != owner) revert NotOwner();
+    if (msg.sender != owner) revert FundMe__NotOwner();
     _;
  }
 
