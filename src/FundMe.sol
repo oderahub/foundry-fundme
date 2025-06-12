@@ -13,7 +13,7 @@ contract FundMe {
    
     using PriceConverter for uint256;
 
-   uint256 public minmumUsd = 5e18;
+   uint256 public constant MINMUM_USD = 5 * 10 ** 18;
 
    address[] public funders;
 
@@ -21,7 +21,7 @@ contract FundMe {
 
    function fund () public payable {
 
-    require(msg.value.getConversionRate() >= minmumUsd, "did not send enough eth");
+    require(msg.value.getConversionRate() >= MINMUM_USD, "did not send enough eth");
 
     // msg.value.getConversionRate();
     funders.push(msg.sender);
