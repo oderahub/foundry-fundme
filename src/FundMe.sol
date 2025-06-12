@@ -2,78 +2,71 @@
 
 pragma solidity >=0.8.18;
 
-
 import {PriceConverter} from "./PriceConverter.sol";
 
-
-
-error FundMe__NotOwner ();
+error FundMe__NotOwner();
 
 contract FundMe {
-   
     using PriceConverter for uint256;
 
-   uint256 public constant MINMUM_USD = 5 * 10 ** 18;
+    uint256 public constant MINMUM_USD = 5 * 10 ** 18;
 
-   address[] public funders;
+    address[] public funders;
 
-  mapping( address funder => uint256 amountFunded) public addressToAmountFunded;
+    mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
 
-   function fund () public payable {
+    function fund() public payable {
+        require(msg.value.getConversionRate() >= MINMUM_USD, "did not send enough eth");
 
-    require(msg.value.getConversionRate() >= MINMUM_USD, "did not send enough eth");
-
-    // msg.value.getConversionRate();
-    funders.push(msg.sender);
-    addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] + msg.value;
-   }
-
-   address public owner;
-
-   constructor () {
-    owner = msg.sender;
-   }
-   
-   function withdraw () public onlyOwner {
-    
-    
-    for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex ++) {
-       address funder =funders[funderIndex];
-       addressToAmountFunded[funder] = 0;
+        // msg.value.getConversionRate();
+        funders.push(msg.sender);
+        addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] + msg.value;
     }
 
-    funders = new address[](0);
+    address public owner;
 
-    //transfer
-    //send
-    // call
+    constructor() {
+        owner = msg.sender;
+    }
 
-    // payable(msg.sender).transfer(address(this).balance);
+    function withdraw() public onlyOwner {
+        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
+            address funder = funders[funderIndex];
+            addressToAmountFunded[funder] = 0;
+        }
 
-    // //send 
+        funders = new address[](0);
 
-    // bool sendSucess = payable(msg.sender).send(address(this).balance);
-    // require(sendSucess, "send failed.");
+        //transfer
+        //send
+        // call
 
-    //call
- 
-    (bool callSucess, ) = payable(msg.sender).call{value: address(this).balance}("");
-    require(callSucess, "Call failed.");
-   }
+        // payable(msg.sender).transfer(address(this).balance);
 
- modifier onlyOwner () {
-    // require(msg.sender == owner, "only owner can call this function.");
-    // _;
+        // //send
 
-    if (msg.sender != owner) revert FundMe__NotOwner();
-    _;
- }
+        // bool sendSucess = payable(msg.sender).send(address(this).balance);
+        // require(sendSucess, "send failed.");
 
- receive() external payable {
-    fund();
- }
+        //call
 
- fallback() external payable { 
-    fund();
- }
+        (bool callSucess,) = payable(msg.sender).call{value: address(this).balance}("");
+        require(callSucess, "Call failed.");
+    }
+
+    modifier onlyOwner() {
+        // require(msg.sender == owner, "only owner can call this function.");
+        // _;
+
+        if (msg.sender != owner) revert FundMe__NotOwner();
+        _;
+    }
+
+    receive() external payable {
+        fund();
+    }
+
+    fallback() external payable {
+        fund();
+    }
 }
