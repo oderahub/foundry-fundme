@@ -19,7 +19,7 @@ contract FundMeTest is Test {
 
     function testOwnerisMsgSender() public view {
         console.log("msg.sender", msg.sender);
-        console.log("owner",fundMe.owner());
+        console.log("owner", fundMe.owner());
         assertEq(fundMe.owner(), address(this));
     }
 }
