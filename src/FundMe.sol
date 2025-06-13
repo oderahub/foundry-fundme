@@ -9,14 +9,14 @@ error FundMe__NotOwner();
 contract FundMe {
     using PriceConverter for uint256;
 
-    uint256 public constant MINMUM_USD = 5 * 10 ** 18;
+    uint256 public constant MINIMUM_USD = 5 * 10 ** 18;
 
     address[] public funders;
 
     mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
 
     function fund() public payable {
-        require(msg.value.getConversionRate() >= MINMUM_USD, "did not send enough eth");
+        require(msg.value.getConversionRate() >= MINIMUM_USD, "did not send enough eth");
 
         // msg.value.getConversionRate();
         funders.push(msg.sender);
