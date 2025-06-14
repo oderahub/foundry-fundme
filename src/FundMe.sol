@@ -3,31 +3,37 @@
 pragma solidity >=0.8.18;
 
 import {PriceConverter} from "./PriceConverter.sol";
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 error FundMe__NotOwner();
 
 contract FundMe {
     using PriceConverter for uint256;
 
-    uint256 public constant MINIMUM_USD = 5 * 10 ** 18;
+    uint256 public constant MINIMUM_USD = 5e18;
+
+    address public immutable i_owner;
+
+    AggregatorV3Interface private s_priceFeed;
+
+    constructor(address priceFeed) {
+        i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
+    }
 
     address[] public funders;
 
     mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
 
     function fund() public payable {
-        require(msg.value.getConversionRate() >= MINIMUM_USD, "did not send enough eth");
+        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "did not send enough eth");
 
         // msg.value.getConversionRate();
         funders.push(msg.sender);
         addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] + msg.value;
     }
 
-    address public owner;
-
-    constructor() {
-        owner = msg.sender;
-    }
+    
 
     function withdraw() public onlyOwner {
         for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
@@ -60,6 +66,11 @@ contract FundMe {
 
         if (msg.sender != owner) revert FundMe__NotOwner();
         _;
+    }
+
+    function getVersion() public view returns(uint256) {
+        
+        return s_priceFeed.version();
     }
 
     receive() external payable {
