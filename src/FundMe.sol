@@ -33,8 +33,6 @@ contract FundMe {
         addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] + msg.value;
     }
 
-    
-
     function withdraw() public onlyOwner {
         for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
             address funder = funders[funderIndex];
@@ -64,12 +62,11 @@ contract FundMe {
         // require(msg.sender == owner, "only owner can call this function.");
         // _;
 
-        if (msg.sender != owner) revert FundMe__NotOwner();
+        if (msg.sender != i_owner) revert FundMe__NotOwner();
         _;
     }
 
-    function getVersion() public view returns(uint256) {
-        
+    function getVersion() public view returns (uint256) {
         return s_priceFeed.version();
     }
 
