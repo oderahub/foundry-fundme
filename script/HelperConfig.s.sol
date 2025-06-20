@@ -13,8 +13,8 @@ contract HelperConfig is Script {
     //fix magic numbers;
 
     uint8 public constant DECIMALS = 8;
-    int256  public constant INITIAL_PRICE = 2000e8;
-   // local variables 
+    int256 public constant INITIAL_PRICE = 2000e8;
+    // local variables
     NetworkConfig public activeNetworkConfig;
 
     constructor() {
@@ -41,15 +41,14 @@ contract HelperConfig is Script {
     }
 
     function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {
-
         if (activeNetworkConfig.priceFeed != address(0)) {
             return activeNetworkConfig;
         }
         //vm.startBroadcast();
         MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMALS, INITIAL_PRICE);
-       // vm.startBroadcast();
+        // vm.startBroadcast();
 
-        NetworkConfig memory anvilConfig = NetworkConfig( address(mockPriceFeed));
+        NetworkConfig memory anvilConfig = NetworkConfig(address(mockPriceFeed));
         return anvilConfig;
     }
 }
